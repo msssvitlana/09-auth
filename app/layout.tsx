@@ -5,17 +5,7 @@ import "./globals.css";
 import Header from "../components/Header/Header";
 import TanStackProvider from '../components/TanStackProvider/TanStackProvider'
 import Footer from '../components/Footer/Footer'
-
-
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
+import AuthProvider from '../components/AuthProvider/AuthProvider'
 
 
 const roboto = Roboto({
@@ -54,12 +44,16 @@ export default function RootLayout({
     <html lang='en'>
       <body className={roboto.variable}>
         <TanStackProvider>
-          <Header />
+          <AuthProvider>
+           <Header />
           <main>
             {children}
             {modal}
           </main>
           <Footer />
+
+          </AuthProvider>
+          
         </TanStackProvider>
        
       </body>
