@@ -1,6 +1,6 @@
 import type { User } from '../../types/user';
 import { type Note, NewNoteData } from "../../types/note";
-import { nextServer } from './api'
+import nextServer from "./api";
 import { toast } from "react-hot-toast";
 
 const NOTES_PER_PAGE = 12;
@@ -72,7 +72,7 @@ export async function checkSession(): Promise<boolean> {
 }
 
 export const getMe = async (): Promise<User> => {
-  const res = await nextServer.get('/users/me');
+  const res = await nextServer.get<User>("/users/me", { withCredentials: true })
   return res.data;
 };
 

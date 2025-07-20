@@ -49,17 +49,3 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
-
-// export async function PUT(request: Request) {
-//   const cookieStore = await cookies();
-//   const body = await request.json();
-//   const { data } = await api.put('/auth/me', body, {
-//     headers: {
-//       Cookie: cookieStore.toString(),
-//     },
-//   });
-
-//   if (data) return NextResponse.json(data);
-
-//   return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
-// }

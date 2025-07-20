@@ -1,8 +1,8 @@
 // lib/api/serverApi.ts
 import { cookies } from 'next/headers';
-import { nextServer } from './api';
+import nextServer from "./api";
 import type { User } from '../../types/user';
-
+import type { Note } from '../../types/note'
 
 export const getServerMe = async (): Promise<User> => {
   const cookieStore = await cookies();
@@ -34,4 +34,30 @@ export const logout = async (): Promise<void> => {
       Cookie: cookieStore.toString(),
     },
   });
+};
+
+
+
+const NOTES_PER_PAGE = 12;
+export const serverFetchNotes = async (
+  query: string,
+  page: number,
+  tag?: string
+): Promise<{ notes: Note[]; totalPages: number }> => {
+  const cookieHeader = cookies().toString(); 
+  const params: Record<string, string | number> = {
+    page,
+    perPage: NOTES_PER_PAGE,
+    ...(query.trim() && { search: query.trim() }),
+    ...(tag && tag !== "All" && { tag }),
+  };
+
+  const res = await nextServer.get("/notes", {
+    params,
+    headers: {
+      Cookie: cookieHeader,
+    },
+  });
+
+  return res.data;
 };

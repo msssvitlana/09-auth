@@ -1,4 +1,4 @@
-import { fetchNotes } from "../../../../../lib/api/clientApi";
+import { serverFetchNotes } from "../../../../../lib/api/serverApi";
 import NotesClient from "./Notes.client";
 import { Metadata } from 'next';
 
@@ -34,7 +34,7 @@ export default async function FilteredNotesPage({
   const { slug } = await params;
   const tag = slug[0] === "All" ? undefined : slug[0];
 
-  const data = await fetchNotes( "", 12, tag);
+const data = await serverFetchNotes("", 12, tag);
   console.log(params)
   return <NotesClient notesData={data} tag={tag} />;
 }
