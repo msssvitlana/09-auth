@@ -1,25 +1,30 @@
-// app/(auth routes)/layout.tsx
-
-
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuthStore } from '../../lib/store/authStore';
 
 type Props = {
   children: React.ReactNode;
 };
 
-export default function PublicLayout({ children }: Props) {
+export default function AuthLayout({ children }: Props) {
+  const router = useRouter();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [loading, setLoading] = useState(true);
 
-  const router = useRouter();
-
   useEffect(() => {
-    // refresh викличе перезавантаження даних
-    router.refresh();
-    setLoading(false);
-  }, [router]);
+    if (!isAuthenticated) {
+      // Якщо користувач не авторизований, перенаправляємо на логін
+      router.push('/sign-in');
+    } else {
+      setLoading(false);
+    }
+  }, [isAuthenticated, router]);
 
-  return <>{loading ? <div>Loading...</div> : children}</>;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return <>{children}</>;
 }
