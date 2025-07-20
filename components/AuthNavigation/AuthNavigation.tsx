@@ -1,5 +1,4 @@
 
- 
 // components/AuthNavigation/AuthNavigation.tsx
 
 'use client'
@@ -40,9 +39,8 @@ const AuthNavigation = () => {
   <button className={css.logoutButton} onClick={handleLogout}>
     Logout
   </button>
-</li>                
-            </ul>
-            
+          </li>
+        </ul>        
       </>
  ) : (
             <>

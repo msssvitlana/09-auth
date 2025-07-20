@@ -6,3 +6,9 @@ export type User = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type CreateUserData = {
+  email: string
+  password: string
+  name?: string
+}
