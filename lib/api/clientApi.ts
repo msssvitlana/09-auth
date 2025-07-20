@@ -1,7 +1,7 @@
 import type { User } from '../../types/user';
 import { type Note, NewNoteData } from "../../types/note";
 import { nextServer } from './api'
-
+import { toast } from "react-hot-toast";
 
 const NOTES_PER_PAGE = 12;
 
@@ -61,11 +61,15 @@ export const login = async (data: LoginRequest): Promise<User> => {
   const res = await nextServer.post('/auth/login', data);
   return res.data;
 };
-
-export const checkSession = async (): Promise<User> => {
-  const res = await nextServer.get('/auth/session');
-  return res.data;
-};
+export async function checkSession(): Promise<boolean> {
+  try {
+    await nextServer.get("/auth/session");
+    return true;
+  } catch (error) {
+    toast.error(error instanceof Error ? error.message : String(error));
+    throw error;
+  }
+}
 
 export const getMe = async (): Promise<User> => {
   const res = await nextServer.get('/users/me');

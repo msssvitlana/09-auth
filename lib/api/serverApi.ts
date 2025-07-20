@@ -28,7 +28,7 @@ export const checkServerSession = async () => {
 };
 
 export const logout = async (): Promise<void> => {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   await nextServer.post('/auth/logout', null, {
     headers: {
       Cookie: cookieStore.toString(),

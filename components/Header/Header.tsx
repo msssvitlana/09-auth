@@ -11,9 +11,9 @@ const Header = () => {
       <nav aria-label='Main Navigation'>
         <ul className={css.navigation}>
           <li className={css.navigationLink}><TagsMenu /></li> 
-          <li className={css.menuItem}>
+          {/* <li className={css.menuItem}>
             <Link className={css.navigationLink} href='/profile'>Profile</Link>
-          </li>
+          </li> */}
           <li className={css.menuItem}>
             <Link className={css.navigationLink} href='/about'>About</Link>
           </li>
