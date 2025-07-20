@@ -7,8 +7,3 @@ export type User = {
   updatedAt: Date;
 };
 
-export type CreateUserData = {
-  email: string
-  password: string
-  name?: string
-}
