@@ -1,28 +1,25 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { fetchNoteById } from '../../../../lib/api/clientApi';
 import Modal from '../../../../components/Modal/Modal';
 import css from './NotePreview.module.css';
 import type { Note } from '../../../../types/note';
-import { useParams } from "next/navigation";
-
 
 export default function NotePreviewClient() {
-    const params = useParams<{ id: string }>();
-    const id = params?.id;
+  const params = useParams<{ id: string }>();
+  const id = params?.id;
   const router = useRouter();
 
-  // const idNum = Number(id);
   const {
     data: note,
     isLoading,
     isError,
   } = useQuery<Note>({
     queryKey: ['note', id],
-    queryFn: () => fetchNoteById(id),
-    enabled: !Number.isNaN(id),
+    queryFn: () => fetchNoteById(id!),
+    enabled: !!id, //не виконується, поки id не існує
     refetchOnWindowFocus: false,
   });
 
@@ -30,6 +27,7 @@ export default function NotePreviewClient() {
     router.back();
   };
 
+  if (!id) return <p>Invalid note ID</p>;
   if (isLoading) return <p>Loading note...</p>;
   if (isError || !note) return <p>Failed to load note.</p>;
 
