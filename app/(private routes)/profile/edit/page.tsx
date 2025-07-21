@@ -1,57 +1,64 @@
 'use client';
 import css from './EditProfilePage.module.css';
-import AvatarPicker from '../../../../components/AvatarPicker/AvatarPicker';
-import { getMe, updateMe, uploadImage } from '../../../../lib/api/clientApi';
+// import AvatarPicker from '../../../../components/AvatarPicker/AvatarPicker';
+import { getMe, updateMe } from '../../../../lib/api/clientApi';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuthStore } from "../../../../lib/store/authStore";
+
 
 const EditProfile = () => {
-  const [userName, setUserName] = useState('');
-  const [photoUrl, setPhotoUrl] = useState('');
-  const [email, setEmail] = useState('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const router = useRouter();
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+
+  const [loading, setLoading] = useState(true);
+
+  const setUser = useAuthStore((state) => state.setUser);
 
   useEffect(() => {
-    getMe().then((user) => {
-      setUserName(user.userName ?? '');
-      setPhotoUrl(user.photoUrl ?? '');
-      setEmail(user.email ?? '');
-    });
+    const fetchUser = async () => {
+      try {
+        const user = await getMe();
+        if (user) {
+          setUsername(user.username || "");
+          setEmail(user.email);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
   }, []);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUserName(event.target.value);
-  };
-
-  const handleSaveUser = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    try {
-      const newPhotoUrl = imageFile ? await uploadImage(imageFile) : photoUrl;
-      await updateMe({ userName, photoUrl: newPhotoUrl });
-      setPhotoUrl(newPhotoUrl);
-      alert('Profile updated successfully');
-      router.push('/profile'); // Після оновлення повертаємось на сторінку профілю
-    } catch (error) {
-      console.error('Oops, some error:', error);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const data = await updateMe({ username });
+    if (data) {
+      setUser(data);
+      router.push("/profile");
     }
   };
+
+  const handleCancel = () => router.back();
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <main className={css.mainContent}>
       <div className={css.profileCard}>
         <h1 className={css.formTitle}>Edit Profile</h1>
-        <AvatarPicker profilePhotoUrl={photoUrl} onChangePhoto={setImageFile} />
 
-        <form className={css.profileInfo} onSubmit={handleSaveUser}>
+        <form onSubmit={handleSubmit} className={css.profileInfo}>
           <div className={css.usernameWrapper}>
             <label htmlFor="username">Username:</label>
             <input
               id="username"
               type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className={css.input}
-              value={userName}
-              onChange={handleChange}
             />
           </div>
 
@@ -64,7 +71,7 @@ const EditProfile = () => {
             <button
               type="button"
               className={css.cancelButton}
-              onClick={() => router.back()}
+              onClick={handleCancel}
             >
               Cancel
             </button>

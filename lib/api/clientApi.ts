@@ -26,7 +26,7 @@ export const fetchNotes = async (
   return res.data;
 };
 
-export const fetchNoteById = async (id: number): Promise<Note> => {
+export const fetchNoteById = async (id: string): Promise<Note> => {
   const res = await nextServer.get(`/notes/${id}`);
   return res.data;
 };
@@ -36,7 +36,7 @@ export const createNote = async (note: NewNoteData): Promise<Note> => {
   return res.data;
 };
 
-export const removeNote = async (id: number): Promise<Note> => {
+export const removeNote = async (id: string): Promise<Note> => {
   const res = await nextServer.delete(`/notes/${id}`);
   return res.data;
 };
@@ -44,7 +44,7 @@ export const removeNote = async (id: number): Promise<Note> => {
 export type RegisterRequest = {
   email: string;
   password: string;
-  userName: string;
+  username: string;
 };
 
 export type LoginRequest = {
@@ -81,28 +81,20 @@ export const logout = async (): Promise<void> => {
 };
 
 export type UpdateUserRequest = {
-  userName?: string;
-  photoUrl?: string;
+  username?: string;
+  avatar?: string;
+ 
 };
 
 export const updateMe = async (data: UpdateUserRequest) => {
-  const res = await nextServer.put<User>('/users/me', data);
+  const res = await nextServer.patch<User>('/users/me', data);
   return res.data;
 };
 
-export const uploadImage = async (file: File): Promise<string> => {
-  const formData = new FormData();
-  formData.append('file', file);
-  const { data } = await nextServer.post('/upload', formData);
-  return data.url;
-};
+// export const uploadImage = async (file: File): Promise<string> => {
+//   const formData = new FormData();
+//   formData.append('file', file);
+//   const { data } = await nextServer.post('/upload', formData);
+//   return data.url;
+// };
 
-export type EditUserPayload = {
-  email: string;
-  username: string;
-};
-
-export async function editUser(data: EditUserPayload): Promise<User> {
-  const res = await nextServer.patch<User>("/users/me", data);
-  return res.data;
-}
