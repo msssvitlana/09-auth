@@ -14,9 +14,9 @@ interface NoteDetailPageProps {
 
 export async function generateMetadata({ params }: NoteDetailPageProps): Promise<Metadata> {
   const { id } = await params; 
-  const idNum = Number(id);
+  // const idNum = Number(id);
 
-  const note = await fetchNoteById(idNum);
+  const note = await fetchNoteById(id);
 
   return {
     title: `Note: ${note.title}`,
@@ -49,12 +49,12 @@ export async function generateMetadata({ params }: NoteDetailPageProps): Promise
 
 export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
   const { id } = await params;
-  const idNum = Number(id);
+  // const idNum = Number(id);
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
     queryKey: ["note", id],
-    queryFn: () => fetchNoteById(idNum),
+    queryFn: () => fetchNoteById(id),
   });
 
   return (
