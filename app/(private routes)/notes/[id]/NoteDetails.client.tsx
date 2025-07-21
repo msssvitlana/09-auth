@@ -11,7 +11,7 @@ const NoteDetailClient = () => {
   const params = useParams<{ id: string }>();
   const id = params?.id;
 
-  // const idNum = Number(id);
+  const idNum = Number(id);
   const router = useRouter();
   const {
     data: note,
@@ -19,7 +19,7 @@ const NoteDetailClient = () => {
     error,
   } = useQuery({
     queryKey: ["note", id],
-    queryFn: () => fetchNoteById(id),
+    queryFn: () => fetchNoteById(idNum),
     enabled: !!id, 
     refetchOnMount: false,
   });

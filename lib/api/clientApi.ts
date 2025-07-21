@@ -26,7 +26,7 @@ export const fetchNotes = async (
   return res.data;
 };
 
-export const fetchNoteById = async (id: string): Promise<Note> => {
+export const fetchNoteById = async (id: number): Promise<Note> => {
   const res = await nextServer.get(`/notes/${id}`);
   return res.data;
 };
@@ -36,7 +36,7 @@ export const createNote = async (note: NewNoteData): Promise<Note> => {
   return res.data;
 };
 
-export const removeNote = async (id: string): Promise<Note> => {
+export const removeNote = async (id: number): Promise<Note> => {
   const res = await nextServer.delete(`/notes/${id}`);
   return res.data;
 };
