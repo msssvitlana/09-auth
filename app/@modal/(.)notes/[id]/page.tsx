@@ -15,12 +15,12 @@ interface NoteModalPageProps {
 
 export default async function NoteModalPage({ params }: NoteModalPageProps) {
   const { id } = await params;
-  const idNum = Number(id);
+  // const idNum = Number(id);
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
     queryKey: ["note", id],
-    queryFn: () => fetchNoteById(idNum),
+    queryFn: () => fetchNoteById(id),
   });
 
   return (

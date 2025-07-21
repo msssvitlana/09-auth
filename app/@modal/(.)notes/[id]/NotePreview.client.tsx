@@ -14,14 +14,14 @@ export default function NotePreviewClient() {
     const id = params?.id;
   const router = useRouter();
 
-  const idNum = Number(id);
+  // const idNum = Number(id);
   const {
     data: note,
     isLoading,
     isError,
   } = useQuery<Note>({
     queryKey: ['note', id],
-    queryFn: () => fetchNoteById(idNum),
+    queryFn: () => fetchNoteById(id),
     enabled: !Number.isNaN(id),
     refetchOnWindowFocus: false,
   });
