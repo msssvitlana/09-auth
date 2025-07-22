@@ -1,17 +1,16 @@
 'use client';
 import css from './EditProfilePage.module.css';
-// import AvatarPicker from '../../../../components/AvatarPicker/AvatarPicker';
+import Image from 'next/image';
 import { getMe, updateMe } from '../../../../lib/api/clientApi';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from "../../../../lib/store/authStore";
 
-
 const EditProfile = () => {
   const router = useRouter();
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [loading, setLoading] = useState(true);
 
   const setUser = useAuthStore((state) => state.setUser);
@@ -21,8 +20,9 @@ const EditProfile = () => {
       try {
         const user = await getMe();
         if (user) {
-          setUsername(user.username || "");
+          setUsername(user.username || '');
           setEmail(user.email);
+          setAvatarUrl(user.avatar || '');
         }
       } finally {
         setLoading(false);
@@ -37,7 +37,7 @@ const EditProfile = () => {
     const data = await updateMe({ username });
     if (data) {
       setUser(data);
-      router.push("/profile");
+      router.push('/profile');
     }
   };
 
@@ -49,6 +49,18 @@ const EditProfile = () => {
     <main className={css.mainContent}>
       <div className={css.profileCard}>
         <h1 className={css.formTitle}>Edit Profile</h1>
+
+        {avatarUrl && (
+          <div className={css.avatarWrapper}>
+            <Image
+              src={avatarUrl}
+              alt="User avatar"
+              width={100}
+              height={100}
+              className={css.avatar}
+            />
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className={css.profileInfo}>
           <div className={css.usernameWrapper}>
@@ -62,7 +74,16 @@ const EditProfile = () => {
             />
           </div>
 
-          <p>Email: {email}</p>
+          <div className={css.emailWrapper}>
+            <label htmlFor="email">Email:</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              readOnly
+              className={`${css.input} ${css.readonly}`}
+            />
+          </div>
 
           <div className={css.actions}>
             <button type="submit" className={css.saveButton}>
