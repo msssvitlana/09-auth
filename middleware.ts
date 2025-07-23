@@ -1,7 +1,6 @@
 // middleware.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { parse } from 'cookie';
 import { checkServerSession } from './lib/api/serverApi';
 
@@ -10,63 +9,68 @@ const authRoutes = ['/sign-in', '/sign-up'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const cookieStore = await cookies();
+  const accessToken = request.cookies.get('accessToken')?.value;
+  const refreshToken = request.cookies.get('refreshToken')?.value;
 
-  let accessToken = cookieStore.get('accessToken')?.value;
-  const refreshToken = cookieStore.get('refreshToken')?.value;
+  const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
+  const isPrivateRoute = privateRoutes.some(route => pathname.startsWith(route));
 
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
-  const isPrivateRoute = privateRoutes.some((route) => pathname.startsWith(route));
-  
+  const response = NextResponse.next();
+  let hasValidSession = false;
+
 
   if (!accessToken && refreshToken) {
     try {
-      const data = await checkServerSession();
-      const setCookie = data.headers['set-cookie'];
+      const sessionResponse = await checkServerSession();
+      if (sessionResponse.status === 200) {
+        hasValidSession = true;
 
-      if (setCookie) {
-        const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
-        for (const cookieStr of cookieArray) {
-          const parsed = parse(cookieStr);
-          const options = {
-            expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
-            path: parsed.Path,
-            maxAge: Number(parsed['Max-Age']),
-          };
-          if (parsed.accessToken) cookieStore.set('accessToken', parsed.accessToken, options);
-          if (parsed.refreshToken) cookieStore.set('refreshToken', parsed.refreshToken, options);
+        const setCookieHeader = sessionResponse.headers['set-cookie'];
+        if (setCookieHeader) {
+          const cookieArray = Array.isArray(setCookieHeader)
+            ? setCookieHeader
+            : [setCookieHeader];
+
+          for (const cookieStr of cookieArray) {
+            const parsed = parse(cookieStr);
+
+            if (parsed.accessToken) {
+              response.cookies.set('accessToken', parsed.accessToken, {
+                path: '/',
+                httpOnly: true,
+                sameSite: 'lax',
+              });
+            }
+
+            if (parsed.refreshToken) {
+              response.cookies.set('refreshToken', parsed.refreshToken, {
+                path: '/',
+                httpOnly: true,
+                sameSite: 'lax',
+              });
+            }
+          }
         }
-        accessToken = cookieStore.get('accessToken')?.value;
       }
-    } catch (err) {
-      console.error('Session check failed:', err);
+    } catch (error) {
+      console.error('Session refresh failed:', error);
     }
   }
 
-let isValidSession = false;
 
-if (accessToken) {
-  try {
-    const response = await checkServerSession();
-    if (response.status === 200) {
-      isValidSession = true;
+  if (accessToken || hasValidSession) {
+    if (isAuthRoute) {
+      return NextResponse.redirect(new URL('/', request.url));
     }
-  } catch  {
-    isValidSession = false;
+    return response;
   }
-}
-if (isValidSession) {
-  if (isAuthRoute) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-  return NextResponse.next();
-}
+
 
   if (isPrivateRoute) {
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {

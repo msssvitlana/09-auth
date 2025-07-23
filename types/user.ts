@@ -1,9 +1,9 @@
 export type User = {
-  id: string;
+  // id: string;
   username: string;
   email: string;
   avatar: string;
-  createdAt: Date;
-  updatedAt: Date;
+  // createdAt: Date;
+  // updatedAt: Date;
 };
 

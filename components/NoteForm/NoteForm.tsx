@@ -48,20 +48,19 @@ const NoteForm = ({ tags, onSuccess }: NoteFormProps) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-  
+
     const data: NewNoteData = {
       title: formData.get('title') as string,
       content: formData.get('content') as string,
       tag: formData.get('tag') as NoteTag,
     };
-  
+
     mutate(data);
   };
 
-
   return (
     <form className={css.form} onSubmit={handleSubmit}>
-   <label className={css.formGroup}>
+      <label className={css.formGroup}>
         Title
         <input
           className={css.input}
@@ -87,7 +86,11 @@ const NoteForm = ({ tags, onSuccess }: NoteFormProps) => {
         Tag
         <select
           className={css.select}
-          name="tag" value={draft.tag} onChange={handleChange} required>
+          name="tag"
+          value={draft.tag}
+          onChange={handleChange}
+          required
+        >
           {tags.map((tag) => (
             <option key={tag} value={tag}>
               {tag}
@@ -95,19 +98,19 @@ const NoteForm = ({ tags, onSuccess }: NoteFormProps) => {
           ))}
         </select>
       </label>
-      <div className={css.actions}>
-  <button type="submit" className={css.submitButton}>
-    Create
-  </button>
-  <button
-    type="button"
-    className={css.cancelButton}
-    onClick={() => router.push('/notes/filter/all')}
-  >
-    Cancel
-  </button>
-</div>
 
+      <div className={css.actions}>
+        <button type="submit" className={css.submitButton}>
+          Create
+        </button>
+        <button
+          type="button"
+          className={css.cancelButton}
+          onClick={() => router.back()}
+        >
+          Cancel
+        </button>
+      </div>
     </form>
   );
 };
