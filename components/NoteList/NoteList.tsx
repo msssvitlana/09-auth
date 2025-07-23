@@ -12,11 +12,11 @@ interface NoteListProps {
 
 export default function NoteList({ notes }: NoteListProps) {
   const queryClient = useQueryClient();
-  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const deleteNote = useMutation({
-    mutationFn: (id: number) => removeNote(id),
-    onMutate: (id: number) => {
+    mutationFn: (id: string) => removeNote(id),
+    onMutate: (id: string) => {
       setDeletingId(id);
     },
     onSuccess: async () => {
